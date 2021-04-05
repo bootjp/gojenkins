@@ -126,7 +126,7 @@ func (j *Job) GetBuild(ctx context.Context, id int64) (*Build, error) {
 	// i.e. Server : https://<domain>/jenkins/job/JOB1
 	// "https://<domain>/jenkins/" is the server URL,
 	// we are expecting jobURL = "job/JOB1"
-	jobURL := strings.Replace(j.Raw.URL,j.Jenkins.Server,"",-1)
+	jobURL := strings.Replace(j.Raw.URL, j.Jenkins.Server, "", -1)
 	build := Build{Jenkins: j.Jenkins, Job: j, Raw: new(BuildResponse), Depth: 1, Base: jobURL + "/" + strconv.FormatInt(id, 10)}
 	status, err := build.Poll(ctx)
 	if err != nil {
@@ -135,7 +135,8 @@ func (j *Job) GetBuild(ctx context.Context, id int64) (*Build, error) {
 	if status == 200 {
 		return &build, nil
 	}
-	return nil, errors.New(strconv.Itoa(status))
+
+	return &build, errors.New(strconv.Itoa(status))
 }
 
 func (j *Job) getBuildByType(ctx context.Context, buildType string) (*Build, error) {
