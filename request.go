@@ -108,7 +108,7 @@ func (r *Requester) PostXML(ctx context.Context, endpoint string, xml string, re
 	if err := r.SetCrumb(ctx, ar); err != nil {
 		return nil, err
 	}
-	ar.SetHeader("Content-Type", "application/xml")
+	ar.SetHeader("Content-Type", "application/xml;charset=utf-8")
 	ar.Suffix = ""
 	return r.Do(ctx, ar, &responseStruct, querystring)
 }
@@ -138,7 +138,7 @@ func (r *Requester) SetClient(client *http.Client) *Requester {
 	return r
 }
 
-//Add auth on redirect if required.
+// Add auth on redirect if required.
 func (r *Requester) redirectPolicyFunc(req *http.Request, via []*http.Request) error {
 	if r.BasicAuth != nil {
 		req.SetBasicAuth(r.BasicAuth.Username, r.BasicAuth.Password)
@@ -206,14 +206,14 @@ func (r *Requester) Do(ctx context.Context, ar *APIRequest, responseStruct inter
 		if err = writer.Close(); err != nil {
 			return nil, err
 		}
-		req, err = http.NewRequest(ar.Method, URL.String(), body)
+		req, err = http.NewRequestWithContext(ctx, ar.Method, URL.String(), body)
 		if err != nil {
 			return nil, err
 		}
 		req.Header.Set("Content-Type", writer.FormDataContentType())
 	} else {
 
-		req, err = http.NewRequest(ar.Method, URL.String(), ar.Payload)
+		req, err = http.NewRequestWithContext(ctx, ar.Method, URL.String(), ar.Payload)
 		if err != nil {
 			return nil, err
 		}
